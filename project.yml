@@ -1,0 +1,61 @@
+name: StrongVibes
+options:
+  bundleIdPrefix: net.shadyproject
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    TARGETED_DEVICE_FAMILY: "1"
+    SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+    SUPPORTS_MACCATALYST: NO
+
+targets:
+  StrongVibes:
+    type: application
+    platform: iOS
+    sources:
+      - Sources/StrongVibes
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/StrongVibes/Resources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: net.shadyproject.strongvibes
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+  StrongVibesTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests/StrongVibesTests
+    dependencies:
+      - target: StrongVibes
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: net.shadyproject.strongvibes.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+schemes:
+  StrongVibes:
+    build:
+      targets:
+        StrongVibes: all
+    run:
+      config: Debug
+    test:
+      targets:
+        - StrongVibesTests
+    analyze:
+      config: Debug
+    archive:
+      config: Release

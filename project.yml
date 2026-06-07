@@ -20,13 +20,16 @@ targets:
   StrongVibes:
     type: application
     platform: iOS
+    info:
+      path: Sources/StrongVibes/Resources/Info.plist
+      properties:
+        LSApplicationCategoryType: public.app-category.healthcare-fitness
     sources:
       - Sources/StrongVibes
     dependencies:
       - sdk: HealthKit.framework
     settings:
       base:
-        INFOPLIST_FILE: Sources/StrongVibes/Resources/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: net.shadyproject.strongvibes
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Sources/StrongVibes/Resources/StrongVibes.entitlements

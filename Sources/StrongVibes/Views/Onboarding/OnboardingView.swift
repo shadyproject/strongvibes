@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import HealthKit
 
 struct OnboardingView: View {
 
@@ -13,7 +14,7 @@ struct OnboardingView: View {
     ) ?? .now
 
     private enum OnboardingStep {
-        case welcome, experience, weights, schedule, notifications
+        case welcome, experience, weights, schedule, notifications, healthKit
     }
 
     var body: some View {
@@ -46,7 +47,15 @@ struct OnboardingView: View {
                         onNext: { step = .notifications }
                     )
                 case .notifications:
-                    NotificationsStep(onFinish: completeOnboarding)
+                    NotificationsStep(onFinish: {
+                        if HealthKitService.shared.isAvailable {
+                            step = .healthKit
+                        } else {
+                            completeOnboarding()
+                        }
+                    })
+                case .healthKit:
+                    HealthKitStep(onFinish: completeOnboarding)
                 }
             }
             .animation(.easeInOut, value: step)
@@ -354,6 +363,45 @@ private struct NotificationsStep: View {
                     Task {
                         _ = await NotificationService.shared.requestAuthorization()
                         permissionRequested = true
+                        onFinish()
+                    }
+                }
+                Button(String(localized: "Skip for now")) {
+                    onFinish()
+                }
+                .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+    }
+}
+
+// MARK: - Health Kit
+
+private struct HealthKitStep: View {
+
+    let onFinish: () -> Void
+
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+            Image(systemName: "heart.fill")
+                .font(.system(size: 80))
+                .foregroundStyle(.red)
+            VStack(spacing: 12) {
+                Text(String(localized: "Apple Health"))
+                    .font(.title)
+                    .fontWeight(.bold)
+                Text(String(localized: "StrongVibes can save each workout as a Traditional Strength Training session in Apple Health, with every set recorded as a segment."))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            Spacer()
+            VStack(spacing: 12) {
+                OnboardingButton(title: String(localized: "Connect Apple Health")) {
+                    Task {
+                        _ = await HealthKitService.shared.requestAuthorization()
                         onFinish()
                     }
                 }

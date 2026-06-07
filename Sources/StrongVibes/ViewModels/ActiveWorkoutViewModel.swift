@@ -32,14 +32,23 @@ final class ActiveWorkoutViewModel {
     // Wrapper so deinit (nonisolated in Swift 6) can cancel without crossing actor boundaries.
     private let timerHandle = RestTimerHandle()
 
+    // Tracks when the current set window began (rest ended or workout started).
+    private var currentSetStartDate: Date = .now
+
     // MARK: - Initialization
 
     init(workout: WorkoutRecord) {
         self.workout = workout
+        let startDate = workout.date
+        Task {
+            await HealthKitService.shared.startWorkout(startDate: startDate)
+        }
     }
 
     deinit {
         timerHandle.cancel()
+        // Safety net: discard any open HK builder if finish/discard was not called explicitly.
+        Task { await HealthKitService.shared.discardWorkout() }
     }
 
     // MARK: - Computed
@@ -60,7 +69,25 @@ final class ActiveWorkoutViewModel {
 
     func completeSet() {
         guard let performance = currentPerformance else { return }
+
+        // Capture timing before mutating state.
+        let segmentStart = currentSetStartDate
+        let segmentEnd = Date()
+        let exerciseName = performance.exerciseName
+        let weight = performance.targetWeight
+        let reps = performance.targetReps
+
         performance.completedSets += 1
+
+        Task {
+            await HealthKitService.shared.addSegment(
+                start: segmentStart,
+                end: segmentEnd,
+                exerciseName: exerciseName,
+                weight: weight,
+                reps: reps
+            )
+        }
 
         let allSetsForExerciseDone = performance.completedSets >= performance.targetSets
         if allSetsForExerciseDone {
@@ -73,6 +100,7 @@ final class ActiveWorkoutViewModel {
     func skipRestTimer() {
         stopRestTimer()
         isResting = false
+        currentSetStartDate = Date()
     }
 
     func addWeight(to performance: ExercisePerformance, amount: Double = 2.5) {
@@ -81,6 +109,18 @@ final class ActiveWorkoutViewModel {
 
     func subtractWeight(from performance: ExercisePerformance, amount: Double = 2.5) {
         performance.targetWeight = max(0, performance.targetWeight - amount)
+    }
+
+    // MARK: - HealthKit Lifecycle
+
+    /// Saves the completed workout to HealthKit. Call before dismissing the view on success.
+    func finishHealthKitWorkout() async {
+        await HealthKitService.shared.finishWorkout(endDate: Date())
+    }
+
+    /// Discards the in-progress HealthKit workout without saving. Call on cancellation.
+    func discardHealthKitWorkout() async {
+        await HealthKitService.shared.discardWorkout()
     }
 
     // MARK: - Private
@@ -93,6 +133,7 @@ final class ActiveWorkoutViewModel {
         if nextIndex < workout.performances.count {
             currentExerciseIndex = nextIndex
             currentSetIndex = 0
+            currentSetStartDate = Date()
         } else {
             workout.durationSeconds = Int(Date.now.timeIntervalSince(startedAt))
             isWorkoutComplete = true
@@ -115,6 +156,7 @@ final class ActiveWorkoutViewModel {
                     } else {
                         self.stopRestTimer()
                         self.isResting = false
+                        self.currentSetStartDate = Date()
                     }
                 }
             }

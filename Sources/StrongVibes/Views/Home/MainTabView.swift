@@ -29,6 +29,12 @@ struct MainTabView: View {
                             Label(String(localized: "Records"), systemImage: "trophy.fill")
                         }
                         .tag(2)
+
+                    TrendsView()
+                        .tabItem {
+                            Label(String(localized: "Trends"), systemImage: "chart.line.uptrend.xyaxis")
+                        }
+                        .tag(3)
                 }
                 .fullScreenCover(isPresented: $showingActiveWorkout) {
                     if let workout = viewModel.activeWorkout {

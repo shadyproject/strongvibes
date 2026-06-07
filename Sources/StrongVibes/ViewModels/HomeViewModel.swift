@@ -23,7 +23,23 @@ final class HomeViewModel {
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
+        #if DEBUG
+        observeDevMenuChanges()
+        #endif
     }
+
+    // MARK: - Debug
+
+    #if DEBUG
+    /// Reloads profile state whenever the developer menu mutates the data store.
+    private func observeDevMenuChanges() {
+        Task { @MainActor [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: .devMenuDidChange) {
+                self?.loadProfile()
+            }
+        }
+    }
+    #endif
 
     // MARK: - Public Methods
 

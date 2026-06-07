@@ -45,6 +45,9 @@ struct MainTabView: View {
                         )
                     }
                 }
+                #if DEBUG
+                .devMenuOnShake()
+                #endif
             } else {
                 ProgressView()
                     .onAppear { setupViewModel() }

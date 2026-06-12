@@ -20,5 +20,15 @@
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.healthcare-fitness</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>StrongVibes reads workout history from Apple Health.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>StrongVibes saves your strength training sessions to Apple Health.</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

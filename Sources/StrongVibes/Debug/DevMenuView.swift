@@ -65,14 +65,10 @@ struct DevMenuView: View {
     private var buildInfoSection: some View {
         Section("Build Info") {
             LabeledContent("Configuration", value: "DEBUG")
-            LabeledContent(
-                "Bundle ID",
-                value: Bundle.main.bundleIdentifier ?? "—"
-            )
-            LabeledContent(
-                "Version",
-                value: "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")"
-            )
+            LabeledContent("Bundle ID", value: Bundle.main.bundleIdentifier ?? "—")
+            LabeledContent("Version", value: Bundle.main.shortVersion)
+            LabeledContent("Build", value: Bundle.main.buildNumber)
+            LabeledContent("Commit", value: Bundle.main.gitCommitHash)
         }
     }
 

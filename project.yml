@@ -16,6 +16,9 @@ settings:
     SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
     SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
     SUPPORTS_MACCATALYST: NO
+    # Bump these manually for a major or minor release.
+    MAJOR_VERSION: "1"
+    MINOR_VERSION: "0"
 
 targets:
   StrongVibes:
@@ -27,6 +30,10 @@ targets:
         LSApplicationCategoryType: public.app-category.healthcare-fitness
         NSHealthShareUsageDescription: "StrongVibes reads workout history from Apple Health."
         NSHealthUpdateUsageDescription: "StrongVibes saves your strength training sessions to Apple Health."
+        # Placeholders — overwritten at build time by the "Version from Git" script phase.
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        GitCommitHash: "unknown"
         UIRequiresFullScreen: true
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -53,6 +60,25 @@ targets:
         Release:
           CODE_SIGN_IDENTITY: "Apple Development"
           PROVISIONING_PROFILE_SPECIFIER: "match Development net.shadyproject.strongvibes"
+
+    postBuildScripts:
+      - name: "Version from Git"
+        # basedOnDependencyAnalysis: false forces this to run on every build,
+        # not just when inputs change, so the commit count is always current.
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+
+          COMMIT_COUNT=$(git -C "$SRCROOT" rev-list --count HEAD 2>/dev/null || echo "0")
+          SHORT_HASH=$(git -C "$SRCROOT" rev-parse --short HEAD 2>/dev/null || echo "0000000")
+          VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${COMMIT_COUNT}"
+          PLIST="${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION}"  "${PLIST}"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${COMMIT_COUNT}"         "${PLIST}"
+          /usr/libexec/PlistBuddy -c "Set :GitCommitHash ${SHORT_HASH}"             "${PLIST}"
+
+          echo "StrongVibes ${VERSION} (${SHORT_HASH})"
 
   StrongVibesTests:
     type: bundle.unit-test

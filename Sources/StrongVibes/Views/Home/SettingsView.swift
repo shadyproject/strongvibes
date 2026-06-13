@@ -33,6 +33,12 @@ struct SettingsView: View {
                         }
                     }
                 }
+                Section {
+                    Text("\(Bundle.main.shortVersion) · \(Bundle.main.gitCommitHash)")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundStyle(.secondary)
+                        .font(.footnote)
+                }
             }
             .navigationTitle(String(localized: "Settings"))
             .navigationBarTitleDisplayMode(.inline)

@@ -16,6 +16,8 @@ struct PersonalRecordsView: View {
                 }
             }
             .navigationTitle(String(localized: "Personal Records"))
+            .toolbarBackground(Color(.systemBackground), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 

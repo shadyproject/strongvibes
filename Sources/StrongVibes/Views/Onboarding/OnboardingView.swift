@@ -18,48 +18,48 @@ struct OnboardingView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack {
-                switch step {
-                case .welcome:
-                    WelcomeStep(onNext: { step = .experience })
-                case .experience:
-                    ExperienceStep(
-                        selected: $selectedExperience,
-                        onNext: {
-                            if selectedExperience == .newLifter {
-                                startingWeights = ProgramConstants.newLifterStartingWeights
-                                step = .schedule
-                            } else {
-                                step = .weights
-                            }
-                        }
-                    )
-                case .weights:
-                    StartingWeightsStep(
-                        weights: $startingWeights,
-                        onNext: { step = .schedule }
-                    )
-                case .schedule:
-                    ScheduleStep(
-                        preferredDays: $preferredDays,
-                        notificationTime: $notificationTime,
-                        onNext: { step = .notifications }
-                    )
-                case .notifications:
-                    NotificationsStep(onFinish: {
-                        if HealthKitService.shared.isAvailable {
-                            step = .healthKit
+        VStack {
+            switch step {
+            case .welcome:
+                WelcomeStep(onNext: { step = .experience })
+            case .experience:
+                ExperienceStep(
+                    selected: $selectedExperience,
+                    onNext: {
+                        if selectedExperience == .newLifter {
+                            startingWeights = ProgramConstants.newLifterStartingWeights
+                            step = .schedule
                         } else {
-                            completeOnboarding()
+                            step = .weights
                         }
-                    })
-                case .healthKit:
-                    HealthKitStep(onFinish: completeOnboarding)
-                }
+                    }
+                )
+            case .weights:
+                StartingWeightsStep(
+                    weights: $startingWeights,
+                    onNext: { step = .schedule }
+                )
+            case .schedule:
+                ScheduleStep(
+                    preferredDays: $preferredDays,
+                    notificationTime: $notificationTime,
+                    onNext: { step = .notifications }
+                )
+            case .notifications:
+                NotificationsStep(onFinish: {
+                    if HealthKitService.shared.isAvailable {
+                        step = .healthKit
+                    } else {
+                        completeOnboarding()
+                    }
+                })
+            case .healthKit:
+                HealthKitStep(onFinish: completeOnboarding)
             }
-            .animation(.easeInOut, value: step)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground).ignoresSafeArea())
+        .animation(.easeInOut, value: step)
     }
 
     private func completeOnboarding() {

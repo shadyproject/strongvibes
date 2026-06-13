@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var notificationTime: Date = .now
     @State private var selectedDays: Set<Int> = [2, 4, 6]
+    @State private var selectedAppearance: AppearanceMode = .system
 
     private let weekdays: [(name: String, value: Int)] = [
         ("Sun", 1), ("Mon", 2), ("Tue", 3), ("Wed", 4),
@@ -25,6 +26,17 @@ struct SettingsView: View {
                         selection: $notificationTime,
                         displayedComponents: .hourAndMinute
                     )
+                }
+                Section(String(localized: "Appearance")) {
+                    Picker(String(localized: "Theme"), selection: $selectedAppearance) {
+                        ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: selectedAppearance) { _, newValue in
+                        profile?.appearancePreference = newValue
+                    }
                 }
                 Section(String(localized: "Notifications")) {
                     Button(String(localized: "Request Notification Permission")) {
@@ -85,6 +97,7 @@ struct SettingsView: View {
     private func loadCurrentSettings() {
         guard let profile else { return }
         selectedDays = Set(profile.preferredWorkoutDays)
+        selectedAppearance = profile.appearancePreference
         let hour = profile.notificationHour
         let minute = profile.notificationMinute
         var components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
@@ -96,6 +109,7 @@ struct SettingsView: View {
     private func saveSettings() {
         guard let profile else { return }
         profile.preferredWorkoutDays = Array(selectedDays).sorted()
+        profile.appearancePreference = selectedAppearance
         let components = Calendar.current.dateComponents([.hour, .minute], from: notificationTime)
         profile.notificationHour = components.hour ?? 9
         profile.notificationMinute = components.minute ?? 0

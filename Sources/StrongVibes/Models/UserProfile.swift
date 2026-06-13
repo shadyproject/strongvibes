@@ -20,6 +20,7 @@ final class UserProfile {
     var failureCountsData: Data
     /// JSON-encoded `[Int]` of Calendar weekday values (1=Sun…7=Sat) for preferred workout days.
     var preferredWorkoutDaysData: Data
+    var appearancePreferenceRawValue: String?
 
     // MARK: - Initialization
 
@@ -35,6 +36,7 @@ final class UserProfile {
         self.failureCountsData = Self.encode([String: Int]())
         // Default: Monday (2), Wednesday (4), Friday (6)
         self.preferredWorkoutDaysData = Self.encode([2, 4, 6])
+        self.appearancePreferenceRawValue = nil
     }
 
     // MARK: - Computed Accessors
@@ -62,6 +64,11 @@ final class UserProfile {
     var preferredWorkoutDays: [Int] {
         get { Self.decode([Int].self, from: preferredWorkoutDaysData) ?? [2, 4, 6] }
         set { preferredWorkoutDaysData = Self.encode(newValue) }
+    }
+
+    var appearancePreference: AppearanceMode {
+        get { AppearanceMode(rawValue: appearancePreferenceRawValue ?? "") ?? .system }
+        set { appearancePreferenceRawValue = newValue.rawValue }
     }
 
     // MARK: - Private Helpers

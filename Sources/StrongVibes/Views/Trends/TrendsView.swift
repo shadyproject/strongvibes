@@ -42,6 +42,8 @@ struct TrendsView: View {
                 }
             }
             .navigationTitle(String(localized: "Trends"))
+            .toolbarBackground(Color(.systemBackground), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 

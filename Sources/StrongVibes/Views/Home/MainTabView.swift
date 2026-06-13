@@ -13,29 +13,18 @@ struct MainTabView: View {
         Group {
             if let viewModel = homeViewModel {
                 TabView(selection: $selectedTab) {
-                    DashboardView(viewModel: viewModel, showingActiveWorkout: $showingActiveWorkout)
-                        .tabItem {
-                            Label(String(localized: "Today"), systemImage: "dumbbell.fill")
-                        }
-                        .tag(0)
-
-                    HistoryView()
-                        .tabItem {
-                            Label(String(localized: "History"), systemImage: "calendar")
-                        }
-                        .tag(1)
-
-                    PersonalRecordsView()
-                        .tabItem {
-                            Label(String(localized: "Records"), systemImage: "trophy.fill")
-                        }
-                        .tag(2)
-
-                    TrendsView()
-                        .tabItem {
-                            Label(String(localized: "Trends"), systemImage: "chart.line.uptrend.xyaxis")
-                        }
-                        .tag(3)
+                    Tab(String(localized: "Today"), systemImage: "dumbbell.fill", value: 0) {
+                        DashboardView(viewModel: viewModel, showingActiveWorkout: $showingActiveWorkout)
+                    }
+                    Tab(String(localized: "History"), systemImage: "calendar", value: 1) {
+                        HistoryView()
+                    }
+                    Tab(String(localized: "Records"), systemImage: "trophy.fill", value: 2) {
+                        PersonalRecordsView()
+                    }
+                    Tab(String(localized: "Trends"), systemImage: "chart.line.uptrend.xyaxis", value: 3) {
+                        TrendsView()
+                    }
                 }
                 .onChange(of: showingActiveWorkout) { _, isShowing in
                     if isShowing, let workout = viewModel.activeWorkout {

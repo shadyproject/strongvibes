@@ -37,6 +37,8 @@ struct HistoryView: View {
                     .padding(.bottom, 12)
             }
             .navigationTitle(String(localized: "History"))
+            .toolbarBackground(Color(.systemBackground), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .sheet(item: $selectedWorkout) { workout in
                 WorkoutDetailView(workout: workout)
             }

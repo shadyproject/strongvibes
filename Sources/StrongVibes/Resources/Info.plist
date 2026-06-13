@@ -26,8 +26,8 @@
 	<string>StrongVibes reads workout history from Apple Health.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>StrongVibes saves your strength training sessions to Apple Health.</string>
-	<key>UIRequiresFullScreen</key>
-	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

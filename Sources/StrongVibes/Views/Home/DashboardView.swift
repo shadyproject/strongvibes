@@ -17,6 +17,10 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle(String(localized: "StrongVibes"))
+            .toolbarBackground(Color(.systemBackground), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color(.systemBackground), for: .tabBar)
+            .toolbarBackground(.visible, for: .tabBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
